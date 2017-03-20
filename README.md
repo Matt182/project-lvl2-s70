@@ -9,3 +9,4 @@
 - sudo npm install -g lev_project-lvl2-s70
 
 # Запуск
+  gendiff [options] <file_path_before> <file_path_after>
