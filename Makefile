@@ -7,7 +7,7 @@ publish:
 make lint:
 	npm run eslint
 
-make lint:
+make test:
 	npm run test
 
 gendiff:
