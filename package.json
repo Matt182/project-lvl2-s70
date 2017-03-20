@@ -11,7 +11,11 @@
     "babel-node": "babel-node",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "prepublish": "npm run build",
-    "eslint": "eslint src/*"
+    "eslint": "eslint src/*",
+    "codeclimate-test-reporter": "codeclimate"
+  },
+  "jest": {
+    "collectCoverage" : true
   },
   "repository": {
     "type": "git",
