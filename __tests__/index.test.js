@@ -1,7 +1,7 @@
 import gendiff from '../src/';
 
-const before = '/vagrant/project-lvl2-s70/__tests__/fixtures/before.fixture.json';
-const after = '/vagrant/project-lvl2-s70/__tests__/fixtures/after.fixture.json';
+const before = '__tests__/fixtures/before.fixture.json';
+const after = '__tests__/fixtures/after.fixture.json';
 
 const out = `{
   host: hexlet.io
