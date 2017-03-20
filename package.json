@@ -1,8 +1,9 @@
 {
   "name": "lev_project-lvl2-s70",
-  "version": "0.0.1",
+  "version": "1.0.3",
   "description": "",
   "bin": {
+    "gendiff": "dist/bin/gendiff.js"
   },
   "scripts": {
     "babel-node": "babel-node",
@@ -31,5 +32,6 @@
     "eslint-plugin-import": "^2.2.0"
   },
   "dependencies": {
+    "commander": "^2.9.0"
   }
 }
