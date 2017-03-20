@@ -1,0 +1,35 @@
+{
+  "name": "lev_project-lvl2-s70",
+  "version": "0.0.1",
+  "description": "",
+  "bin": {
+  },
+  "scripts": {
+    "babel-node": "babel-node",
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "prepublish": "npm run build",
+    "eslint": "eslint src/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Matt182/project-lvl2-s70.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Matt182/project-lvl2-s70/issues"
+  },
+  "homepage": "https://github.com/Matt182/project-lvl2-s70#readme",
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-core": "^6.23.1",
+    "babel-eslint": "^7.1.1",
+    "babel-preset-env": "^1.1.8",
+    "babel-preset-stage-0": "^6.22.0",
+    "eslint": "^3.16.0",
+    "eslint-config-airbnb-base": "^11.1.0",
+    "eslint-plugin-import": "^2.2.0"
+  },
+  "dependencies": {
+  }
+}
