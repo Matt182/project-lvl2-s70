@@ -1,7 +1,10 @@
 import gendiff from '../src/';
 
-const before = '__tests__/fixtures/before.fixture.json';
-const after = '__tests__/fixtures/after.fixture.json';
+const jsonBefore = '__tests__/fixtures/before.fixture.json';
+const jsonAfter = '__tests__/fixtures/after.fixture.json';
+
+const yamlBefore = '__tests__/fixtures/before.fixture.yml';
+const yamlAfter = '__tests__/fixtures/after.fixture.yml';
 
 const out = `{
   host: hexlet.io
@@ -11,6 +14,10 @@ const out = `{
 + verbose: true
 }`;
 
-test('show correct difference', () => {
-  expect(gendiff(before, after)).toBe(out);
+test('show correct difference in json', () => {
+  expect(gendiff(jsonBefore, jsonAfter)).toBe(out);
+});
+
+test('show correct difference in yaml', () => {
+  expect(gendiff(yamlBefore, yamlAfter)).toBe(out);
 });

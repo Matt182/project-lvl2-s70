@@ -1,5 +1,7 @@
 import fs from 'fs';
 import _ from 'lodash';
+import path from 'path';
+import getParser from './parsers';
 
 const UNCHANGED = 1;
 const CHANGED = 2;
@@ -35,6 +37,8 @@ const findDifference = (before, after) => {
   return difference;
 };
 
+const getFileExt = file => path.extname(file).substr(1);
+
 const makeMessage = (difference) => {
   const message = Object.keys(difference).reduce((acc, key) => {
     const result = acc;
@@ -54,20 +58,27 @@ const makeMessage = (difference) => {
 };
 
 export default (pathBefore, pathAfter) => {
-  if (fs.exists(pathBefore)) {
+  if (!fs.existsSync(pathBefore)) {
     throw new Error(`file ${pathBefore} doesn't exists`);
   }
-  if (fs.exists(pathAfter)) {
+  if (!fs.existsSync(pathAfter)) {
     throw new Error(`file ${pathAfter} doesn't exists`);
   }
+
+  if (getFileExt(pathBefore) !== getFileExt(pathAfter)) {
+    throw new Error('files formats are not consistent');
+  }
+
+  const format = getFileExt(pathBefore);
+  const parser = getParser(format);
 
   const fileBefore = fs.readFileSync(pathBefore);
   const fileAfter = fs.readFileSync(pathAfter);
 
-  const jsonBefore = JSON.parse(fileBefore);
-  const jsonAfter = JSON.parse(fileAfter);
+  const before = parser(fileBefore);
+  const after = parser(fileAfter);
 
-  const difference = findDifference(jsonBefore, jsonAfter);
+  const difference = findDifference(before, after);
   const message = makeMessage(difference);
   return message;
 };
