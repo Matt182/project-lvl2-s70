@@ -72,8 +72,8 @@ export default (pathBefore, pathAfter) => {
   const format = getFileExt(pathBefore);
   const parser = getParser(format);
 
-  const fileBefore = fs.readFileSync(pathBefore);
-  const fileAfter = fs.readFileSync(pathAfter);
+  const fileBefore = fs.readFileSync(pathBefore, 'utf8');
+  const fileAfter = fs.readFileSync(pathAfter, 'utf8');
 
   const before = parser(fileBefore);
   const after = parser(fileAfter);

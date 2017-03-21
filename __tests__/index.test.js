@@ -6,6 +6,9 @@ const jsonAfter = '__tests__/fixtures/after.fixture.json';
 const yamlBefore = '__tests__/fixtures/before.fixture.yml';
 const yamlAfter = '__tests__/fixtures/after.fixture.yml';
 
+const iniBefore = '__tests__/fixtures/before.fixture.ini';
+const iniAfter = '__tests__/fixtures/after.fixture.ini';
+
 const out = `{
   host: hexlet.io
 + timeout: 20
@@ -20,4 +23,8 @@ test('show correct difference in json', () => {
 
 test('show correct difference in yaml', () => {
   expect(gendiff(yamlBefore, yamlAfter)).toBe(out);
+});
+
+test('show correct difference in ini', () => {
+  expect(gendiff(iniBefore, iniAfter)).toBe(out);
 });
