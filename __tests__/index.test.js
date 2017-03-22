@@ -17,14 +17,40 @@ const out = `{
 + verbose: true
 }`;
 
+const complexOut = `{
+  common: {
+    setting1: Value 1
+  - setting2: 200
+    setting3: true
+  - setting6: {
+      key: value
+    }
+  + setting4: blah blah
+  + setting5: {
+      key5: value5
+    }
+  }
+  group1: {
+  + baz: bars
+  - baz: bas
+    foo: bar
+  }
+- group2: {
+    abc: 12345
+  }
++ group3: {
+    fee: 100500
+  }
+}`;
+
 test('show correct difference in json', () => {
-  expect(gendiff(jsonBefore, jsonAfter)).toBe(out);
+  expect(gendiff(jsonBefore, jsonAfter)).toBe(complexOut);
 });
 
 test('show correct difference in yaml', () => {
-  expect(gendiff(yamlBefore, yamlAfter)).toBe(out);
+  expect(gendiff(yamlBefore, yamlAfter)).toBe(complexOut);
 });
 
 test('show correct difference in ini', () => {
-  expect(gendiff(iniBefore, iniAfter)).toBe(out);
+  expect(gendiff(iniBefore, iniAfter)).toBe(complexOut);
 });

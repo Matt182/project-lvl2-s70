@@ -7,54 +7,83 @@ const UNCHANGED = 1;
 const CHANGED = 2;
 const DELETED = 3;
 const ADDED = 4;
+const OBJECT = 5;
 
-const findDifference = (before, after) => {
-  const part = _.transform(before, (result, value, key) => {
-    const item = result;
-    item[key] = {
-      before: value,
-      after: '',
-      status: DELETED,
-    };
-    return item;
-  }, {});
-
-  const difference = _.transform(after, (result, value, key) => {
-    const item = result;
-    if (_.has(item, key)) {
-      item[key].after = value;
-      item[key].status = item[key].after === item[key].before ? UNCHANGED : CHANGED;
-    } else {
-      item[key] = {
+const buildDifference = (before, after) => {
+  const keys = _.union(_.keys(before), _.keys(after));
+  const result = _.transform(keys, (acc, key) => {
+    const accumulator = acc;
+    if (_.isUndefined(before[key])) {
+      accumulator[key] = {
         before: '',
-        after: value,
+        after: after[key],
         status: ADDED,
       };
+    } else if (_.isUndefined(after[key])) {
+      accumulator[key] = {
+        before: before[key],
+        after: '',
+        status: DELETED,
+      };
+    } else if (before[key] === after[key]) {
+      accumulator[key] = {
+        before: before[key],
+        after: after[key],
+        status: UNCHANGED,
+      };
+    } else if (_.isObject(before[key])) {
+      accumulator[key] = {
+        children: buildDifference(before[key], after[key]),
+        status: OBJECT,
+      };
+    } else {
+      accumulator[key] = {
+        before: before[key],
+        after: after[key],
+        status: CHANGED,
+      };
     }
-    return item;
-  }, part);
-
-  return difference;
+    return accumulator;
+  }, {});
+  return result;
 };
 
 const getFileExt = file => path.extname(file).substr(1);
 
-const makeMessage = (difference) => {
-  const message = Object.keys(difference).reduce((acc, key) => {
+const makeMessageDefault = (structure, prefix) => {
+  let result = '';
+  if (_.isObject(structure)) {
+    result = _.keys(structure).reduce((acc, key) => {
+      const line = `${acc}${prefix}  ${key}: ${makeMessageDefault(structure[key], `${prefix}  `)}\n`;
+      return line;
+    }, '{\n');
+    result = `${result}${prefix}}`;
+  } else {
+    result = `${structure}`;
+  }
+  return result;
+};
+
+const makeOutputString = (difference, prefix = '') => {
+  const message = _.keys(difference).reduce((acc, key) => {
     const result = acc;
     const value = difference[key];
+    if (value.status === OBJECT) {
+      return `${result}${prefix}  ${key}: ${makeOutputString(value.children, `${prefix}  `)}\n`;
+    }
     if (value.status === UNCHANGED) {
-      return `${result}  ${key}: ${value.before}\n`;
+      return `${result}${prefix}  ${key}: ${value.after}\n`;
     }
     if (value.status === ADDED) {
-      return `${result}+ ${key}: ${value.after}\n`;
+      return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, `${prefix}  `)}\n`;
     }
     if (value.status === DELETED) {
-      return `${result}- ${key}: ${value.before}\n`;
+      return `${result}${prefix}- ${key}: ${makeMessageDefault(value.before, `${prefix}  `)}\n`;
     }
-    return `${result}+ ${key}: ${value.after}\n- ${key}: ${value.before}\n`;
-  }, '{\n');
-  return `${message}}`;
+    return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, `${prefix}  `)}\n` +
+    `${prefix}- ${key}: ${makeMessageDefault(value.before, `${prefix}  `)}\n`;
+  }, '');
+  return `{\n${message}${prefix}}`;
 };
 
 export default (pathBefore, pathAfter) => {
@@ -70,15 +99,15 @@ export default (pathBefore, pathAfter) => {
   }
 
   const format = getFileExt(pathBefore);
-  const parser = getParser(format);
+  const parse = getParser(format);
 
-  const fileBefore = fs.readFileSync(pathBefore, 'utf8');
-  const fileAfter = fs.readFileSync(pathAfter, 'utf8');
+  const fileContentBefore = fs.readFileSync(pathBefore, 'utf8');
+  const fileContentAfter = fs.readFileSync(pathAfter, 'utf8');
 
-  const before = parser(fileBefore);
-  const after = parser(fileAfter);
+  const before = parse(fileContentBefore);
+  const after = parse(fileContentAfter);
 
-  const difference = findDifference(before, after);
-  const message = makeMessage(difference);
+  const difference = buildDifference(before, after);
+  const message = makeOutputString(difference);
   return message;
 };
