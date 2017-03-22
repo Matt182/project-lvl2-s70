@@ -54,7 +54,7 @@ const makeMessageDefault = (structure, prefix) => {
   let result = '';
   if (_.isObject(structure)) {
     result = _.keys(structure).reduce((acc, key) => {
-      const line = `${acc}${prefix}  ${key}: ${makeMessageDefault(structure[key], `${prefix}  `)}\n`;
+      const line = `${acc}${prefix}    ${key}: ${makeMessageDefault(structure[key], `${prefix}  `)}\n`;
       return line;
     }, '{\n');
     result = `${result}${prefix}}`;
@@ -64,12 +64,12 @@ const makeMessageDefault = (structure, prefix) => {
   return result;
 };
 
-const makeOutputString = (difference, prefix = '') => {
+const makeOutputString = (difference, prefix = '  ', postfix = '') => {
   const message = _.keys(difference).reduce((acc, key) => {
     const result = acc;
     const value = difference[key];
     if (value.status === OBJECT) {
-      return `${result}${prefix}  ${key}: ${makeOutputString(value.children, `${prefix}  `)}\n`;
+      return `${result}${prefix}  ${key}: ${makeOutputString(value.children, `${prefix}    `, `${prefix}  `)}\n`;
     }
     if (value.status === UNCHANGED) {
       return `${result}${prefix}  ${key}: ${value.after}\n`;
@@ -83,7 +83,7 @@ const makeOutputString = (difference, prefix = '') => {
     return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, `${prefix}  `)}\n` +
     `${prefix}- ${key}: ${makeMessageDefault(value.before, `${prefix}  `)}\n`;
   }, '');
-  return `{\n${message}${prefix}}`;
+  return `{\n${message}${postfix}}`;
 };
 
 export default (pathBefore, pathAfter) => {
