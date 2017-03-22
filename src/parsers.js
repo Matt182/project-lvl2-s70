@@ -1,11 +1,11 @@
-import YAML from 'js-yaml';
-import INI from 'ini';
+import Yaml from 'js-yaml';
+import Ini from 'ini';
 
-const parseJson = file => JSON.parse(file);
+const parseJson = string => JSON.parse(string);
 
-const parseYaml = file => YAML.load(file);
+const parseYaml = string => Yaml.load(string);
 
-const parseIni = file => INI.parse(file);
+const parseIni = string => Ini.parse(string);
 
 const parsers = {
   json: parseJson,
