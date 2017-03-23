@@ -4,7 +4,7 @@ import commander from 'commander';
 import gendiff from '../';
 
 commander
-  .version('1.4.1')
+  .version('1.4.2')
   .description('Compares two configuration files and shows a difference.')
   .option('-f, --format [type]', 'output format')
   .arguments('<first_config> <second_config>')

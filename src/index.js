@@ -1,6 +1,7 @@
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
+import { Map } from 'immutable';
 import getParser from './parsers';
 
 const UNCHANGED = 1;
@@ -11,50 +12,49 @@ const OBJECT = 5;
 
 const buildDifference = (before, after) => {
   const keys = _.union(_.keys(before), _.keys(after));
-  const result = _.transform(keys, (acc, key) => {
-    const accumulator = acc;
+  const result = _.reduce(keys, (acc, key) => {
     if (_.isUndefined(before[key])) {
-      accumulator[key] = {
+      return acc.set(key, {
         before: '',
         after: after[key],
         status: ADDED,
-      };
+      });
     } else if (_.isUndefined(after[key])) {
-      accumulator[key] = {
+      return acc.set(key, {
         before: before[key],
         after: '',
         status: DELETED,
-      };
+      });
     } else if (before[key] === after[key]) {
-      accumulator[key] = {
+      return acc.set(key, {
         before: before[key],
         after: after[key],
         status: UNCHANGED,
-      };
+      });
     } else if (_.isObject(before[key])) {
-      accumulator[key] = {
+      return acc.set(key, {
         children: buildDifference(before[key], after[key]),
         status: OBJECT,
-      };
-    } else {
-      accumulator[key] = {
-        before: before[key],
-        after: after[key],
-        status: CHANGED,
-      };
+      });
     }
-    return accumulator;
-  }, {});
-  return result;
+    return acc.set(key, {
+      before: before[key],
+      after: after[key],
+      status: CHANGED,
+    });
+  }, new Map({}));
+  return result.toJS();
 };
 
 const getFileExt = file => path.extname(file).substr(1);
+
+const repeatSpace = times => ' '.repeat(times);
 
 const makeMessageDefault = (structure, prefix) => {
   let result = '';
   if (_.isObject(structure)) {
     result = _.keys(structure).reduce((acc, key) => {
-      const line = `${acc}${prefix}    ${key}: ${makeMessageDefault(structure[key], `${prefix}  `)}\n`;
+      const line = `${acc}${prefix}${repeatSpace(4)}${key}: ${makeMessageDefault(structure[key], prefix + repeatSpace(2))}\n`;
       return line;
     }, '{\n');
     result = `${result}${prefix}}`;
@@ -69,19 +69,19 @@ const makeOutputString = (difference, prefix = '  ', postfix = '') => {
     const result = acc;
     const value = difference[key];
     if (value.status === OBJECT) {
-      return `${result}${prefix}  ${key}: ${makeOutputString(value.children, `${prefix}    `, `${prefix}  `)}\n`;
+      return `${result}${prefix}${repeatSpace(2)}${key}: ${makeOutputString(value.children, prefix + repeatSpace(4), prefix + repeatSpace(2))}\n`;
     }
     if (value.status === UNCHANGED) {
-      return `${result}${prefix}  ${key}: ${value.after}\n`;
+      return `${result}${prefix}${repeatSpace(2)}${key}: ${value.after}\n`;
     }
     if (value.status === ADDED) {
-      return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, `${prefix}  `)}\n`;
+      return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, prefix + repeatSpace(2))}\n`;
     }
     if (value.status === DELETED) {
-      return `${result}${prefix}- ${key}: ${makeMessageDefault(value.before, `${prefix}  `)}\n`;
+      return `${result}${prefix}- ${key}: ${makeMessageDefault(value.before, prefix + repeatSpace(2))}\n`;
     }
-    return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, `${prefix}  `)}\n` +
-    `${prefix}- ${key}: ${makeMessageDefault(value.before, `${prefix}  `)}\n`;
+    return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, prefix + repeatSpace(2))}\n` +
+    `${prefix}- ${key}: ${makeMessageDefault(value.before, prefix + repeatSpace(2))}\n`;
   }, '');
   return `{\n${message}${postfix}}`;
 };
