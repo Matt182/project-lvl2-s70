@@ -1,4 +1,5 @@
 import gendiff from '../src/';
+import formatOutput from '../src/formater';
 
 const jsonBefore = '__tests__/fixtures/before.fixture.json';
 const jsonAfter = '__tests__/fixtures/after.fixture.json';
@@ -8,14 +9,6 @@ const yamlAfter = '__tests__/fixtures/after.fixture.yml';
 
 const iniBefore = '__tests__/fixtures/before.fixture.ini';
 const iniAfter = '__tests__/fixtures/after.fixture.ini';
-
-const out = `{
-  host: hexlet.io
-+ timeout: 20
-- timeout: 50
-- proxy: 123.234.53.22
-+ verbose: true
-}`;
 
 const complexOut = `{
     common: {
@@ -43,14 +36,35 @@ const complexOut = `{
     }
 }`;
 
+const plain = `Property 'common.setting2' was removed
+Property 'common.setting6' was removed
+Property 'common.setting4' was added with value: blah blah
+Property 'common.setting5' was added with complex value
+Property 'group1.baz' was updated. From 'bas' to 'bars'
+Property 'group2' was removed
+Property 'group3' was added with complex value
+`;
+
 test('show correct difference in json', () => {
-  expect(gendiff(jsonBefore, jsonAfter)).toBe(complexOut);
+  expect(formatOutput(gendiff(jsonBefore, jsonAfter))).toBe(complexOut);
 });
 
 test('show correct difference in yaml', () => {
-  expect(gendiff(yamlBefore, yamlAfter)).toBe(complexOut);
+  expect(formatOutput(gendiff(yamlBefore, yamlAfter))).toBe(complexOut);
 });
 
 test('show correct difference in ini', () => {
-  expect(gendiff(iniBefore, iniAfter)).toBe(complexOut);
+  expect(formatOutput(gendiff(iniBefore, iniAfter))).toBe(complexOut);
+});
+
+test('show correct difference in json', () => {
+  expect(formatOutput(gendiff(jsonBefore, jsonAfter), 'plain')).toBe(plain);
+});
+
+test('show correct difference in yaml', () => {
+  expect(formatOutput(gendiff(yamlBefore, yamlAfter), 'plain')).toBe(plain);
+});
+
+test('show correct difference in ini', () => {
+  expect(formatOutput(gendiff(iniBefore, iniAfter), 'plain')).toBe(plain);
 });

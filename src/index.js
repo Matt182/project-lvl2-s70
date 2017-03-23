@@ -4,11 +4,11 @@ import path from 'path';
 import { Map } from 'immutable';
 import getParser from './parsers';
 
-const UNCHANGED = 1;
-const CHANGED = 2;
-const DELETED = 3;
-const ADDED = 4;
-const OBJECT = 5;
+export const UNCHANGED = 1;
+export const CHANGED = 2;
+export const DELETED = 3;
+export const ADDED = 4;
+export const OBJECT = 5;
 
 const buildDifference = (before, after) => {
   const keys = _.union(_.keys(before), _.keys(after));
@@ -48,44 +48,6 @@ const buildDifference = (before, after) => {
 
 const getFileExt = file => path.extname(file).substr(1);
 
-const repeatSpace = times => ' '.repeat(times);
-
-const makeMessageDefault = (structure, prefix) => {
-  let result = '';
-  if (_.isObject(structure)) {
-    result = _.keys(structure).reduce((acc, key) => {
-      const line = `${acc}${prefix}${repeatSpace(4)}${key}: ${makeMessageDefault(structure[key], prefix + repeatSpace(2))}\n`;
-      return line;
-    }, '{\n');
-    result = `${result}${prefix}}`;
-  } else {
-    result = `${structure}`;
-  }
-  return result;
-};
-
-const makeOutputString = (difference, prefix = '  ', postfix = '') => {
-  const message = _.keys(difference).reduce((acc, key) => {
-    const result = acc;
-    const value = difference[key];
-    if (value.status === OBJECT) {
-      return `${result}${prefix}${repeatSpace(2)}${key}: ${makeOutputString(value.children, prefix + repeatSpace(4), prefix + repeatSpace(2))}\n`;
-    }
-    if (value.status === UNCHANGED) {
-      return `${result}${prefix}${repeatSpace(2)}${key}: ${value.after}\n`;
-    }
-    if (value.status === ADDED) {
-      return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, prefix + repeatSpace(2))}\n`;
-    }
-    if (value.status === DELETED) {
-      return `${result}${prefix}- ${key}: ${makeMessageDefault(value.before, prefix + repeatSpace(2))}\n`;
-    }
-    return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, prefix + repeatSpace(2))}\n` +
-    `${prefix}- ${key}: ${makeMessageDefault(value.before, prefix + repeatSpace(2))}\n`;
-  }, '');
-  return `{\n${message}${postfix}}`;
-};
-
 export default (pathBefore, pathAfter) => {
   if (!fs.existsSync(pathBefore)) {
     throw new Error(`file ${pathBefore} doesn't exists`);
@@ -108,6 +70,5 @@ export default (pathBefore, pathAfter) => {
   const after = parse(fileContentAfter);
 
   const difference = buildDifference(before, after);
-  const message = makeOutputString(difference);
-  return message;
+  return difference;
 };

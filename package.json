@@ -1,6 +1,6 @@
 {
   "name": "lev_project-lvl2-s70",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "",
   "main": "dist/index.js",
   "bin": {
