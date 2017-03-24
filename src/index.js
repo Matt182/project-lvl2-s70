@@ -4,46 +4,52 @@ import path from 'path';
 import { Map } from 'immutable';
 import getParser from './parsers';
 
-export const UNCHANGED = 1;
-export const CHANGED = 2;
-export const DELETED = 3;
-export const ADDED = 4;
-export const OBJECT = 5;
+export const unchanged = 1;
+export const changed = 2;
+export const deleted = 3;
+export const added = 4;
+export const object = 5;
 
 const buildDifference = (before, after) => {
   const keys = _.union(_.keys(before), _.keys(after));
   const result = _.reduce(keys, (acc, key) => {
     if (_.isUndefined(before[key])) {
-      return acc.set(key, {
-        before: '',
-        after: after[key],
-        status: ADDED,
-      });
+      return [...acc,
+        { key,
+          before: '',
+          after: after[key],
+          status: added,
+        }];
     } else if (_.isUndefined(after[key])) {
-      return acc.set(key, {
-        before: before[key],
-        after: '',
-        status: DELETED,
-      });
+      return [...acc,
+        { key,
+          before: before[key],
+          after: '',
+          status: deleted,
+        }];
     } else if (before[key] === after[key]) {
-      return acc.set(key, {
+      return [...acc,
+        {
+          key,
+          before: before[key],
+          after: after[key],
+          status: unchanged,
+        }];
+    } else if (_.isObject(before[key])) {
+      return [...acc,
+        { key,
+          children: buildDifference(before[key], after[key]),
+          status: object,
+        }];
+    }
+    return [...acc,
+      { key,
         before: before[key],
         after: after[key],
-        status: UNCHANGED,
-      });
-    } else if (_.isObject(before[key])) {
-      return acc.set(key, {
-        children: buildDifference(before[key], after[key]),
-        status: OBJECT,
-      });
-    }
-    return acc.set(key, {
-      before: before[key],
-      after: after[key],
-      status: CHANGED,
-    });
-  }, new Map({}));
-  return result.toJS();
+        status: changed,
+      }];
+  }, []);
+  return result;
 };
 
 const getFileExt = file => path.extname(file).substr(1);

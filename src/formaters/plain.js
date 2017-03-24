@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { CHANGED, DELETED, ADDED, OBJECT } from '../';
+import { changed, deleted, added, object } from '../';
 
 const getPlainValue = (value) => {
   if (_.isObject(value)) {
@@ -15,19 +15,19 @@ const getPlainUpdated = (before, after) => {
 };
 
 const plainFormater = (difference, path = '') => {
-  const result = _.keys(difference).reduce((acc, key) => {
-    if (difference[key].status === DELETED) {
-      return `${acc}Property '${path}${key}' was removed\n`;
+  const result = difference.reduce((acc, node) => {
+    if (node.status === deleted) {
+      return `${acc}Property '${path}${node.key}' was removed\n`;
     }
-    if (difference[key].status === ADDED) {
-      return `${acc}Property '${path}${key}' was added with ${getPlainValue(difference[key].after)}\n`;
+    if (node.status === added) {
+      return `${acc}Property '${path}${node.key}' was added with ${getPlainValue(node.after)}\n`;
     }
-    if (difference[key].status === CHANGED) {
-      return `${acc}Property '${path}${key}' was updated. ` +
-        `From ${getPlainUpdated(difference[key].before, difference[key].after)}\n`;
+    if (node.status === changed) {
+      return `${acc}Property '${path}${node.key}' was updated. ` +
+        `From ${getPlainUpdated(node.before, node.after)}\n`;
     }
-    if (difference[key].status === OBJECT) {
-      return `${acc}${plainFormater(difference[key].children, `${path}${key}.`)}`;
+    if (node.status === object) {
+      return `${acc}${plainFormater(node.children, `${path}${node.key}.`)}`;
     }
     return acc;
   }, '');

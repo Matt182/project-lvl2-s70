@@ -45,6 +45,71 @@ Property 'group2' was removed
 Property 'group3' was added with complex value
 `;
 
+const json = `{
+  "common": {
+    "setting1": {
+      "before": "Value 1",
+      "after": "Value 1",
+      "status": "unchanged"
+    },
+    "setting2": {
+      "before": "200",
+      "after": "",
+      "status": "deleted"
+    },
+    "setting3": {
+      "before": true,
+      "after": true,
+      "status": "unchanged"
+    },
+    "setting6": {
+      "before": {
+        "key": "value"
+      },
+      "after": "",
+      "status": "deleted"
+    },
+    "setting4": {
+      "before": "",
+      "after": "blah blah",
+      "status": "added"
+    },
+    "setting5": {
+      "before": "",
+      "after": {
+        "key5": "value5"
+      },
+      "status": "added"
+    }
+  },
+  "group1": {
+    "baz": {
+      "before": "bas",
+      "after": "bars",
+      "status": "changed"
+    },
+    "foo": {
+      "before": "bar",
+      "after": "bar",
+      "status": "unchanged"
+    }
+  },
+  "group2": {
+    "before": {
+      "abc": "12345"
+    },
+    "after": "",
+    "status": "deleted"
+  },
+  "group3": {
+    "before": "",
+    "after": {
+      "fee": "100500"
+    },
+    "status": "added"
+  }
+}`;
+
 test('show correct difference in json', () => {
   expect(formatOutput(gendiff(jsonBefore, jsonAfter))).toBe(complexOut);
 });
@@ -67,4 +132,12 @@ test('show correct difference in yaml', () => {
 
 test('show correct difference in ini', () => {
   expect(formatOutput(gendiff(iniBefore, iniAfter), 'plain')).toBe(plain);
+});
+
+test('show correct difference in json', () => {
+  expect(formatOutput(gendiff(jsonBefore, jsonAfter), 'json')).toBe(json);
+});
+
+test('show correct difference in ini', () => {
+  expect(formatOutput(gendiff(iniBefore, iniAfter), 'json')).toBe(json);
 });

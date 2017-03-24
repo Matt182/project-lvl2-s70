@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { UNCHANGED, DELETED, ADDED, OBJECT } from '../';
+import { unchanged, deleted, added, object } from '../';
 
 const repeatSpace = times => ' '.repeat(times);
 
@@ -18,23 +18,22 @@ const makeMessageDefault = (structure, prefix) => {
 };
 
 const defaultFormater = (difference, prefix = '  ', postfix = '') => {
-  const message = _.keys(difference).reduce((acc, key) => {
+  const message = difference.reduce((acc, node) => {
     const result = acc;
-    const value = difference[key];
-    if (value.status === OBJECT) {
-      return `${result}${prefix}${repeatSpace(2)}${key}: ${defaultFormater(value.children, prefix + repeatSpace(4), prefix + repeatSpace(2))}\n`;
+    if (node.status === object) {
+      return `${result}${prefix}${repeatSpace(2)}${node.key}: ${defaultFormater(node.children, prefix + repeatSpace(4), prefix + repeatSpace(2))}\n`;
     }
-    if (value.status === UNCHANGED) {
-      return `${result}${prefix}${repeatSpace(2)}${key}: ${value.after}\n`;
+    if (node.status === unchanged) {
+      return `${result}${prefix}${repeatSpace(2)}${node.key}: ${node.after}\n`;
     }
-    if (value.status === ADDED) {
-      return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, prefix + repeatSpace(2))}\n`;
+    if (node.status === added) {
+      return `${result}${prefix}+ ${node.key}: ${makeMessageDefault(node.after, prefix + repeatSpace(2))}\n`;
     }
-    if (value.status === DELETED) {
-      return `${result}${prefix}- ${key}: ${makeMessageDefault(value.before, prefix + repeatSpace(2))}\n`;
+    if (node.status === deleted) {
+      return `${result}${prefix}- ${node.key}: ${makeMessageDefault(node.before, prefix + repeatSpace(2))}\n`;
     }
-    return `${result}${prefix}+ ${key}: ${makeMessageDefault(value.after, prefix + repeatSpace(2))}\n` +
-    `${prefix}- ${key}: ${makeMessageDefault(value.before, prefix + repeatSpace(2))}\n`;
+    return `${result}${prefix}+ ${node.key}: ${makeMessageDefault(node.after, prefix + repeatSpace(2))}\n` +
+    `${prefix}- ${node.key}: ${makeMessageDefault(node.before, prefix + repeatSpace(2))}\n`;
   }, '');
   return `{\n${message}${postfix}}`;
 };
