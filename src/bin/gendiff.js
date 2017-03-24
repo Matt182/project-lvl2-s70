@@ -5,7 +5,7 @@ import formatOutput from '../formater';
 import gendiff from '../';
 
 commander
-  .version('1.5.0')
+  .version('1.6.0')
   .description('Compares two configuration files and shows a difference.')
   .option('-f, --format [type]', 'output format')
   .arguments('<first_config> <second_config>')
