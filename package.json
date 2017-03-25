@@ -1,6 +1,6 @@
 {
   "name": "lev_project-lvl2-s70",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "",
   "main": "dist/index.js",
   "bin": {
@@ -11,7 +11,7 @@
     "babel-node": "babel-node",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "prepublish": "npm run build",
-    "eslint": "eslint src/*",
+    "eslint": "eslint src/* __tests__/*",
     "codeclimate-test-reporter": "codeclimate"
   },
   "jest": {

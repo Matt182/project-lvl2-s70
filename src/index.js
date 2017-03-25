@@ -1,14 +1,14 @@
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
-import { Map } from 'immutable';
 import getParser from './parsers';
+import getOutputFormater from './formater';
 
-export const unchanged = 1;
-export const changed = 2;
-export const deleted = 3;
-export const added = 4;
-export const object = 5;
+export const unchanged = 'unchanged';
+export const changed = 'changed';
+export const deleted = 'deleted';
+export const added = 'added';
+export const object = 'object';
 
 const buildDifference = (before, after) => {
   const keys = _.union(_.keys(before), _.keys(after));
@@ -54,7 +54,7 @@ const buildDifference = (before, after) => {
 
 const getFileExt = file => path.extname(file).substr(1);
 
-export default (pathBefore, pathAfter) => {
+export default (pathBefore, pathAfter, outFormat) => {
   if (!fs.existsSync(pathBefore)) {
     throw new Error(`file ${pathBefore} doesn't exists`);
   }
@@ -76,5 +76,6 @@ export default (pathBefore, pathAfter) => {
   const after = parse(fileContentAfter);
 
   const difference = buildDifference(before, after);
-  return difference;
+  const outputFormater = getOutputFormater(outFormat);
+  return outputFormater(difference);
 };

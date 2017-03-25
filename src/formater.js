@@ -12,7 +12,7 @@ const getFormater = (format) => {
   return defaultFormater;
 };
 
-export default (output, format) => {
+export default (format) => {
   const formater = getFormater(format);
-  return formater(output);
+  return formater;
 };

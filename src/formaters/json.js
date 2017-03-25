@@ -1,13 +1,6 @@
 import _ from 'lodash';
-import { unchanged, changed, deleted, added, object } from '../';
+import { object } from '../';
 
-const statusAsString = {
-  [unchanged]: 'unchanged',
-  [changed]: 'changed',
-  [deleted]: 'deleted',
-  [added]: 'added',
-  [object]: 'object',
-};
 
 const prepare = (difference) => {
   const result = difference.reduce((acc, node) => {
@@ -18,7 +11,7 @@ const prepare = (difference) => {
       accumulator[node.key] = {
         before: node.before,
         after: node.after,
-        status: statusAsString[node.status],
+        status: node.status,
       };
     }
     return accumulator;

@@ -1,5 +1,4 @@
 import gendiff from '../src/';
-import formatOutput from '../src/formater';
 
 const jsonBefore = '__tests__/fixtures/before.fixture.json';
 const jsonAfter = '__tests__/fixtures/after.fixture.json';
@@ -111,33 +110,33 @@ const json = `{
 }`;
 
 test('show correct difference in json', () => {
-  expect(formatOutput(gendiff(jsonBefore, jsonAfter))).toBe(complexOut);
+  expect(gendiff(jsonBefore, jsonAfter)).toBe(complexOut);
 });
 
 test('show correct difference in yaml', () => {
-  expect(formatOutput(gendiff(yamlBefore, yamlAfter))).toBe(complexOut);
+  expect(gendiff(yamlBefore, yamlAfter)).toBe(complexOut);
 });
 
 test('show correct difference in ini', () => {
-  expect(formatOutput(gendiff(iniBefore, iniAfter))).toBe(complexOut);
+  expect(gendiff(iniBefore, iniAfter)).toBe(complexOut);
 });
 
 test('show correct difference in json', () => {
-  expect(formatOutput(gendiff(jsonBefore, jsonAfter), 'plain')).toBe(plain);
+  expect(gendiff(jsonBefore, jsonAfter, 'plain')).toBe(plain);
 });
 
 test('show correct difference in yaml', () => {
-  expect(formatOutput(gendiff(yamlBefore, yamlAfter), 'plain')).toBe(plain);
+  expect(gendiff(yamlBefore, yamlAfter, 'plain')).toBe(plain);
 });
 
 test('show correct difference in ini', () => {
-  expect(formatOutput(gendiff(iniBefore, iniAfter), 'plain')).toBe(plain);
+  expect(gendiff(iniBefore, iniAfter, 'plain')).toBe(plain);
 });
 
 test('show correct difference in json', () => {
-  expect(formatOutput(gendiff(jsonBefore, jsonAfter), 'json')).toBe(json);
+  expect(gendiff(jsonBefore, jsonAfter, 'json')).toBe(json);
 });
 
 test('show correct difference in ini', () => {
-  expect(formatOutput(gendiff(iniBefore, iniAfter), 'json')).toBe(json);
+  expect(gendiff(iniBefore, iniAfter, 'json')).toBe(json);
 });
