@@ -19,9 +19,6 @@ const prepare = (difference) => {
   return result;
 };
 
-const jsonFormater = (difference) => {
-  const result = JSON.stringify(prepare(difference), null, 2);
-  return result;
-};
+const jsonFormater = difference => JSON.stringify(prepare(difference), null, 2);
 
 export default jsonFormater;

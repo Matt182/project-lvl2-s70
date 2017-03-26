@@ -2,7 +2,7 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import getParser from './parsers';
-import getOutputFormater from './formater';
+import getOutputFormater from './formaters';
 
 export const unchanged = 'unchanged';
 export const changed = 'changed';
